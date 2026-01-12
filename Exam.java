@@ -1,7 +1,10 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
+import java.util.Stack;
 
 /**
  * ============================================================================
@@ -109,6 +112,16 @@ public class Exam {
      * - O(n) in-order traversal for sorted rankings
      * - Automatic sorting without explicit sort() call
      */
+    /**
+     * Queue for students waiting to take the exam.
+     * 
+     * WHY QUEUE?
+     * - FIFO (First-In-First-Out) ensures fairness
+     * - O(1) to add (offer) and remove (poll)
+     * - LinkedList implementation provides standard Queue behavior
+     */
+    private Queue<Student> waitingList;
+
     private RankTree rankTree;
 
     // ========================================================================
@@ -128,6 +141,7 @@ public class Exam {
         students = new ArrayList<>(); // O(1) - empty list
         studentMap = new HashMap<>(); // O(1) - empty map
         rankTree = new RankTree(); // O(1) - empty tree
+        waitingList = new LinkedList<>(); // O(1) - empty queue
 
         // Initialize exam questions (DSA focused)
         initializeQuestions();
@@ -208,6 +222,71 @@ public class Exam {
                 },
                 2 // Correct answer index
         );
+    }
+
+    // ========================================================================
+    // WAITING LIST (QUEUE) METHODS
+    // ========================================================================
+
+    /**
+     * Adds a student to the waiting list queue.
+     * 
+     * Time Complexity: O(1)
+     * Reason: LinkedList.offer() adds to tail in constant time.
+     * 
+     * @param student Student to add
+     */
+    public void addToWaitingList(Student student) {
+        if (waitingList.contains(student)) {
+            System.out.println("⚠ " + student.getName() + " is already in the waiting list.");
+            return;
+        }
+
+        waitingList.offer(student); // Enqueue operation
+        System.out.println("✓ " + student.getName() + " added to waiting list.");
+        System.out.println("  Position in queue: " + waitingList.size());
+    }
+
+    /**
+     * Processes the next student in the queue.
+     * 
+     * Time Complexity: O(1)
+     * Reason: LinkedList.poll() removes head in constant time.
+     * 
+     * @return The next student, or null if queue is empty
+     */
+    public Student processNextInQueue() {
+        if (waitingList.isEmpty()) {
+            System.out.println("\nWaiting list is empty!");
+            return null;
+        }
+
+        Student nextStudent = waitingList.poll(); // Dequeue operation
+        System.out.println("\n✓ Processing next student: " + nextStudent.getName());
+        return nextStudent;
+    }
+
+    /**
+     * Displays current state of the waiting list.
+     * 
+     * Time Complexity: O(n) traversal
+     */
+    public void displayWaitingList() {
+        if (waitingList.isEmpty()) {
+            System.out.println("\nWaiting list is empty.");
+            return;
+        }
+
+        System.out.println("\n╔══════════════════════════════════════════════════════╗");
+        System.out.println("║                WAITING LIST (Queue - FIFO)            ║");
+        System.out.println("╠══════════════════════════════════════════════════════╣");
+
+        int pos = 1;
+        for (Student s : waitingList) {
+            System.out.printf("║  %d. %-46s ║%n", pos++, s.getName());
+        }
+
+        System.out.println("╚══════════════════════════════════════════════════════╝");
     }
 
     // ========================================================================

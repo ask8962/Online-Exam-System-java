@@ -123,6 +123,16 @@ public class Main {
                     break;
 
                 case 7:
+                    // Join Waiting List (Queue)
+                    handleJoinWaitingList();
+                    break;
+
+                case 8:
+                    // Process Waiting List
+                    handleProcessWaitingList();
+                    break;
+
+                case 9:
                     // Exit
                     running = false;
                     displayExitMessage();
@@ -167,6 +177,8 @@ public class Main {
         System.out.println("║  │ • LinkedList      → Attempt history tracking            │  ║");
         System.out.println("║  │ • Binary Search Tree → Ranking system                   │  ║");
         System.out.println("║  │ • Binary Search   → Search student by ID                │  ║");
+        System.out.println("║  │ • Stack           → Exam Backtracking (Undo)            │  ║");
+        System.out.println("║  │ • Queue           → Student Waiting List                │  ║");
         System.out.println("║  └─────────────────────────────────────────────────────────┘  ║");
         System.out.println("║                                                               ║");
         System.out.println("╚═══════════════════════════════════════════════════════════════╝");
@@ -202,9 +214,11 @@ public class Main {
         System.out.println("│  4. View Ranking List (BST)                                  │");
         System.out.println("│  5. Search Student by ID (Binary Search)                     │");
         System.out.println("│  6. View All Registered Students                             │");
-        System.out.println("│  7. Exit                                                      │");
+        System.out.println("│  7. Join Waiting List (Queue - FIFO)                         │");
+        System.out.println("│  8. Process Waiting List                                     │");
+        System.out.println("│  9. Exist                                                    │");
         System.out.println("└───────────────────────────────────────────────────────────────┘");
-        System.out.print("\nEnter your choice (1-7): ");
+        System.out.print("\nEnter your choice (1-9): ");
     }
 
     /**
@@ -224,6 +238,8 @@ public class Main {
         System.out.println("║  │ Binary Search      : O(log n)                           │  ║");
         System.out.println("║  │ BST Insert         : O(log n) average                   │  ║");
         System.out.println("║  │ BST Traversal      : O(n)                               │  ║");
+        System.out.println("║  │ Queue Offer/Poll   : O(1)                               │  ║");
+        System.out.println("║  │ Stack Push/Pop     : O(1)                               │  ║");
         System.out.println("║  │ LinkedList Add     : O(1)                               │  ║");
         System.out.println("║  │ ArrayList Add      : O(1) amortized                     │  ║");
         System.out.println("║  └─────────────────────────────────────────────────────────┘  ║");
@@ -429,6 +445,45 @@ public class Main {
     private static void handleViewAllStudents() {
         // O(n) ArrayList traversal
         exam.displayAllStudents();
+    }
+
+    /**
+     * Handles adding current student to waiting list.
+     */
+    private static void handleJoinWaitingList() {
+        if (currentStudent == null) {
+            System.out.println("\n⚠ Please login first! (Option 1)");
+            return;
+        }
+
+        exam.addToWaitingList(currentStudent);
+    }
+
+    /**
+     * Handles processing the waiting list.
+     * Takes next student from queue and starts their exam.
+     */
+    private static void handleProcessWaitingList() {
+        System.out.println("\n╭───────────────────────────────────────────────────────────────╮");
+        System.out.println("│  WAITING LIST (Queue) PROCESSING                              │");
+        System.out.println("╰───────────────────────────────────────────────────────────────╯");
+
+        exam.displayWaitingList();
+
+        System.out.println("\nPress 'p' to process next student, or any other key to cancel...");
+        String input = scanner.nextLine().trim();
+
+        if (input.equalsIgnoreCase("p")) {
+            Student next = exam.processNextInQueue();
+            if (next != null) {
+                // Set as current student and start exam
+                currentStudent = next;
+                System.out.println("Logged in as: " + currentStudent.getName());
+
+                System.out.println("Starting exam immediately...");
+                exam.conductExam(currentStudent, scanner);
+            }
+        }
     }
 
     /**
